@@ -1,0 +1,13 @@
+# Dashboard reference redesign
+
+The protected `/app` dashboard follows the supplied reference: a 72px application header, 226px desktop sidebar, landscape hero, five compact KPIs, a large district map, statewide classification donut, assistant handoff, and two small comparison cards. Smaller screens collapse to a mobile menu, responsive KPI grid, and stacked content.
+
+The hero uses a project-owned generated landscape image at `public/images/maharashtra-water-landscape.webp` (created with the built-in image generation tool for this dashboard and optimized to WebP). It is illustrative and makes no claim to depict a specific reservoir. The display face is DM Serif Display via `next/font`; interface text uses the existing Geist sans. The palette uses navy, groundwater blue, muted green, cream, and semantic classification colors. The left image overlay keeps editorial text readable.
+
+All dashboard figures come from the existing server query layer: `getOverallSummary(2024)`, `getClassificationSummary(2024)`, `getDistrictComparison(2024)`, `getDistricts()`, and `getAssessmentUnits()`. Extractable resource and extraction are labeled separately in ha-m. Assessment units are globally unique unit names according to the current query layer; classification totals count assessment records, which can differ from that unique-name count. Donut percentages and district rankings are calculated from query results.
+
+The map reuses the existing Leaflet component and local 36-district GeoJSON. It defaults to extraction because the query layer has no district classification methodology. Its selector offers the existing recharge, extractable resource, extraction, and net availability aggregates; selecting a district reveals an Explorer link. The base map tiles remain supplied by OpenStreetMap as in Analytics.
+
+Assistant chips and the question form navigate to `/app/chat?prompt=...`, where the existing chat form is prefilled for review and submission. They do not start a dashboard-side AI request. Header search opens Explorer, where district and assessment-unit selection already works; the year indicator is fixed to the only verified year, 2024. About and Help point to real dashboard sections.
+
+Icons and the donut are native SVG/CSS, with no chart or icon dependency. Focus outlines, labels, active navigation state, text legends, safe query-error messages, a matching loading skeleton, and reduced-motion handling are retained. The screenshot's district classification choropleth, counts, and volume figures were intentionally not copied: only the real data and supported map metrics are displayed.
