@@ -112,8 +112,38 @@ const assessmentFallback = formatGroundwaterFallback(
   },
 );
 assert.match(assessmentFallback, /Stage of groundwater extraction: Not available/);
+const classificationCounts = { safe: 2, semi_critical: 1, critical: 0, over_exploited: 0, salinity: 0 };
+const summaryFixture = {
+  year: 2024,
+  recordCount: 3,
+  assessmentUnitCount: 3,
+  totalAnnualRecharge: 300,
+  totalAnnualExtractableGroundwaterResource: 250,
+  totalGroundwaterExtraction: 125,
+  totalNetGroundwaterAvailability: 125,
+  classificationCounts,
+};
+const deterministicCases = [
+  [{ action: "getDistricts", arguments: {} }, ["Pune", "Nashik"], /Available districts:[\s\S]*Pune[\s\S]*Nashik/],
+  [{ action: "getAssessmentUnits", arguments: { district: "Pune" } }, ["Haveli", "Indapur"], /Available assessment units:[\s\S]*Haveli[\s\S]*Indapur/],
+  [{ action: "getDistrictSummary", arguments: { district: "Pune", year: 2024 } }, { district: "Pune", ...summaryFixture }, /Pune groundwater summary[\s\S]*125 ha-m/],
+  [{ action: "getClassificationSummary", arguments: { year: 2024 } }, { year: 2024, totalCount: 3, classificationCounts }, /Safe: 2[\s\S]*Semi Critical: 1/],
+  [{ action: "getTopExtractionAreas", arguments: { district: "Pune", year: 2024, limit: 2 } }, [
+    { district: "Pune", assessmentUnit: "Haveli", year: 2024, extraction: 98.7, recharge: 120, classification: "safe", stageOfGroundwaterExtractionPercent: 82.25, netGroundwaterAvailabilityForFutureUse: 21.3 },
+    { district: "Pune", assessmentUnit: "Indapur", year: 2024, extraction: 87.6, recharge: 100, classification: "semi_critical", stageOfGroundwaterExtractionPercent: 87.6, netGroundwaterAvailabilityForFutureUse: 12.4 },
+  ], /1\. Haveli \(Pune\).*98\.7 ha-m[\s\S]*2\. Indapur \(Pune\).*87\.6 ha-m/],
+  [{ action: "getOverallSummary", arguments: { year: 2024 } }, summaryFixture, /Maharashtra groundwater summary[\s\S]*125 ha-m/],
+  [{ action: "getDistrictComparison", arguments: { year: 2024 } }, [
+    { district: "Pune", year: 2024, assessmentUnitCount: 2, annualRecharge: 220, annualExtractableResource: 180, annualExtraction: 98.7, netAvailability: 81.3 },
+  ], /Pune: extraction 98\.7 ha-m; net availability 81\.3 ha-m/],
+];
+for (const [intent, result, expected] of deterministicCases) {
+  const formatted = formatGroundwaterFallback(intent, result);
+  assert.equal(typeof formatted, "string", `${intent.action} must have deterministic formatting`);
+  assert.match(formatted, expected, `${intent.action} must preserve its corresponding data`);
+}
 assert.doesNotMatch(fallbackSource, /Pune|Indapur|18329\.5/);
-report("successful query results have deterministic grounded fallback formatting with null safety");
+report("all eight approved results have deterministic grounded formatting with null safety and complete extraction rankings");
 
 assert.match(toolSource, /from "\.\.\/groundwater-queries\.server\.ts"/);
 assert.doesNotMatch(toolSource, /APPROVED_GROUNDWATER_TOOLS|OllamaToolDefinition|\btools\s*:/i);

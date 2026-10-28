@@ -119,6 +119,18 @@ async function answerWithTimings(
   const focusedAnswer = formatFocusedGroundwaterAnswer(intent.intent, toolResult.result.data);
   if (focusedAnswer) return { answer: focusedAnswer, grounded: true, source, year, toolsUsed, metadata: metadata(provider) };
 
+  // OpenRouter is used only for structured planning. Free routed models can
+  // return fluent but unrelated prose during answer generation, so successful
+  // query results must be rendered by the deterministic groundwater formatter.
+  if (provider.name === "openrouter") {
+    const fallbackAnswer = formatGroundwaterFallback(intent.intent, toolResult.result.data);
+    if (fallbackAnswer) {
+      timings.fallback_used = true;
+      return { answer: fallbackAnswer, grounded: true, source, year, toolsUsed, metadata: metadata(provider) };
+    }
+    return failure(provider, "ANSWER_GENERATION_FAILED", "NeerDrishti retrieved the groundwater data, but could not safely format an answer. Please try again.", toolsUsed, year, source);
+  }
+
   const generationStart = performance.now();
   const context = buildGroundwaterAnswerContext(question, intent.intent, toolResult.result.data);
   // Oversized results use complete deterministic formatting, never silently

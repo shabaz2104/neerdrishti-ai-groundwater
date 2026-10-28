@@ -227,7 +227,61 @@ try {
   for (const key of Object.keys(process.env)) if (!(key in savedEnv)) delete process.env[key];
   Object.assign(process.env, savedEnv);
 }
+
+// OpenRouter may plan a validated action, but must never turn a successful DB
+// result into unverified free-model prose. This exercises the real planner,
+// entity validation, Pune-filtered query executor and deterministic formatter.
+const openRouterEngineEnv = { ...process.env };
+const openRouterEngineFetch = globalThis.fetch;
+const puneAreas = [
+  { district: "Pune", assessment_unit: "Haveli", year: 2024, extraction: 98.7, recharge: 120, classification: "safe", stage_of_groundwater_extraction_percent: 82.25, net_groundwater_availability_for_future_use: 21.3 },
+  { district: "Pune", assessment_unit: "Indapur", year: 2024, extraction: 87.6, recharge: 100, classification: "semi_critical", stage_of_groundwater_extraction_percent: 87.6, net_groundwater_availability_for_future_use: 12.4 },
+];
+let openRouterEngineCalls = 0;
+let puneFilterObserved = false;
+Object.assign(process.env, openRouterEnv, { NEXT_PUBLIC_SUPABASE_URL: "https://fixture.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "TEST_ONLY_DATABASE_SECRET" });
+globalThis.fetch = async (input, init) => {
+  const url = new URL(String(input));
+  if (url.origin === "https://fixture.supabase.co") {
+    assert.equal(init?.method ?? "GET", "GET", "OpenRouter grounding must remain read-only");
+    if (url.searchParams.get("select") === "district,assessment_unit") {
+      return Response.json(puneAreas.map(({ district, assessment_unit }) => ({ district, assessment_unit })));
+    }
+    puneFilterObserved = url.searchParams.get("district") === "eq.Pune";
+    return Response.json(puneFilterObserved ? puneAreas : [
+      { ...puneAreas[0], district: "Nashik", assessment_unit: "Statewide Wrong Result", extraction: 999.9 },
+    ]);
+  }
+  assert.equal(url.href, openRouterConfig.baseUrl, "unexpected OpenRouter engine network operation");
+  openRouterEngineCalls++;
+  const body = JSON.parse(init.body);
+  assert.equal(body.model, "openrouter/free");
+  assert.ok(!init.body.includes("TEST_ONLY_DATABASE_SECRET"));
+  return openRouterResponse(openRouterEngineCalls === 1
+    ? JSON.stringify({ action: "getTopExtractionAreas", arguments: { district: "Pune", year: 2024, limit: 2 } })
+    : "User Safety: safe");
+};
+try {
+  const result = await answerGroundwaterQuestion("Which assessment units in Pune have the highest extraction?");
+  assert.equal(result.grounded, true);
+  assert.equal(result.metadata.engine, "openrouter");
+  assert.equal(result.metadata.timings.resolution, "planner");
+  assert.equal(result.metadata.timings.fallback_used, true);
+  assert.equal(result.metadata.timings.generation_ms, 0);
+  assert.deepEqual(result.toolsUsed, ["getTopExtractionAreas"]);
+  assert.equal(result.year, 2024);
+  assert.equal(result.source, "NeerDrishti Supabase groundwater data");
+  assert.equal(puneFilterObserved, true, "Pune ranking must issue a Pune-filtered query");
+  assert.equal(openRouterEngineCalls, 1, "OpenRouter answer generation must not run after a successful query");
+  assert.match(result.answer, /1\. Haveli \(Pune\).*98\.7 ha-m/);
+  assert.match(result.answer, /2\. Indapur \(Pune\).*87\.6 ha-m/);
+  assert.doesNotMatch(result.answer, /User Safety: safe|Statewide Wrong Result|Nashik/);
+} finally {
+  globalThis.fetch = openRouterEngineFetch;
+  for (const key of Object.keys(process.env)) if (!(key in openRouterEngineEnv)) delete process.env[key];
+  Object.assign(process.env, openRouterEngineEnv);
+}
 const providerSource = readFileSync(new URL("../lib/ai/ai-provider.server.ts", import.meta.url), "utf8");
 assert.match(providerSource, /import "server-only"/);
 assert.doesNotMatch(providerSource, /console\.|NEXT_PUBLIC|SUPABASE/);
-console.log(`AI provider validation passed: Ollama, OpenAI and OpenRouter selection; strict hosted schema; conservative fenced-JSON normalization; one malformed OpenRouter intent retry; stage budgets; keep_alive; output caps; retry limits; offline/timeout/401/403/429/5xx; malformed/refused/truncated results; no secret leakage; real-engine validation gates; fresh read-only queries and grounded fallback. Planner prompt: ${GROUNDWATER_INTENT_PROMPT.length} characters. No live network or paid calls.`);
+console.log(`AI provider validation passed: Ollama, OpenAI and OpenRouter selection; strict hosted schema; conservative fenced-JSON normalization; one malformed OpenRouter intent retry; deterministic OpenRouter post-query answers; Pune-filtered extraction ranking; stage budgets; keep_alive; output caps; retry limits; offline/timeout/401/403/429/5xx; malformed/refused/truncated results; no secret leakage; real-engine validation gates; fresh read-only queries and grounded fallback. Planner prompt: ${GROUNDWATER_INTENT_PROMPT.length} characters. No live network or paid calls.`);
