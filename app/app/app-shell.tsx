@@ -3,6 +3,7 @@ import Link from "next/link";
 import AppNavigation from "@/app/app/app-navigation";
 import DashboardIcon from "@/app/app/dashboard-icons";
 import SignOutButton from "@/app/app/sign-out-button";
+import ThemeToggle from "@/app/theme-toggle";
 
 type AppShellProps = { children: React.ReactNode; userEmail?: string };
 
@@ -20,6 +21,7 @@ export default function AppShell({ children, userEmail }: AppShellProps) {
         </Link>
         <div className="app-header-actions">
           <span className="app-year" aria-label="Assessment year 2024, the only available year"><DashboardIcon name="calendar" className="h-4 w-4" /> 2024</span>
+          <ThemeToggle />
           <div className="app-profile" title={userEmail ?? "Authenticated user"} aria-label={userEmail ?? "Authenticated user"}><DashboardIcon name="user" /></div>
           <SignOutButton />
         </div>

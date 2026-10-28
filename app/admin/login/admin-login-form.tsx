@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import DashboardIcon from "@/app/app/dashboard-icons";
 import PublicBrand from "@/app/public-brand";
+import ThemeToggle from "@/app/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,7 +47,7 @@ export default function AdminLoginForm({ initialError }: { initialError?: string
   }
 
   return <main className="admin-login"><section className="admin-login-panel">
-    <div className="admin-login-brand"><PublicBrand /></div>
+    <div className="admin-login-brand"><PublicBrand /><ThemeToggle /></div>
     <div className="admin-login-heading"><span className="admin-badge"><DashboardIcon name="user" /> Restricted administration</span><p>NeerDrishti Administration</p><h1>Admin access</h1><span>Sign in with an authorized administrator account.</span></div>
     <form className="admin-login-form" onSubmit={handleSubmit}>
       <label>Email<input autoComplete="email" maxLength={254} onChange={(event) => setEmail(event.target.value)} placeholder="administrator@example.com" required type="email" value={email} /></label>

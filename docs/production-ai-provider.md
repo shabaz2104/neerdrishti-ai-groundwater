@@ -132,6 +132,9 @@ local Ollama process, LAN connection, laptop or manual tunnel.
 
 Each stage has one abort deadline covering HTTP, response-body reads, backoff
 and any retry. OpenAI and OpenRouter get at most one retry for a network failure, 429 or 5xx.
+OpenRouter also retries the intent stage once when a completed response is malformed;
+the second response must independently pass the same exact/fenced-JSON and strict
+application intent validation. Answer generation is not retried for malformed prose.
 HTTP retries wait at least 150 ms; a Retry-After over one second returns a clean
 failure rather than holding the request open or retrying too early. The retry
 does not receive a fresh timeout. Ollama has no retry. There are at most two

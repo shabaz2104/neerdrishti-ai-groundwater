@@ -35,6 +35,8 @@ assert.match(clientSource, /Retry/);
 assert.match(clientSource, /clearChat/);
 assert.match(clientSource, /textarea/);
 assert.match(clientSource, /aria-live/);
+assert.match(clientSource, /Grounded AI · 2024 groundwater data · no chat history saved/);
+assert.doesNotMatch(clientSource, /Local model/);
 assert.match(clientSource, /focus:ring/);
 assert.doesNotMatch(clientSource, /dangerouslySetInnerHTML/);
 assert.doesNotMatch(markdownSource, /dangerouslySetInnerHTML/);

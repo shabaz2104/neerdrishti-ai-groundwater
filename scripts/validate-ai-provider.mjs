@@ -103,6 +103,14 @@ for (const content of ["not JSON", `Here is the JSON:\n${intentText}`, `${intent
   const result = await new OpenRouterProvider(openRouterConfig, async () => openRouterResponse(content)).generateIntent(messages, schema);
   safeFailure(result, "AI_MALFORMED_RESPONSE");
 }
+let malformedIntentAttempts = 0;
+const recoveredOpenRouterIntent = await new OpenRouterProvider(openRouterConfig, async () => {
+  malformedIntentAttempts++;
+  return openRouterResponse(malformedIntentAttempts === 1 ? "not JSON" : openRouterIntentText);
+}).generateIntent(messages, schema);
+assert.equal(recoveredOpenRouterIntent.ok, true);
+assert.equal(parseGroundwaterIntent(recoveredOpenRouterIntent.content).ok, true);
+assert.equal(malformedIntentAttempts, 2, "OpenRouter intent retries one malformed response");
 const unsafeOpenRouterIntent = await new OpenRouterProvider(openRouterConfig, async () => openRouterResponse('{"action":"runSQL","arguments":{}}')).generateIntent(messages, schema);
 assert.equal(unsafeOpenRouterIntent.ok, true);
 assert.equal(parseGroundwaterIntent(unsafeOpenRouterIntent.content).ok, false);
@@ -222,4 +230,4 @@ try {
 const providerSource = readFileSync(new URL("../lib/ai/ai-provider.server.ts", import.meta.url), "utf8");
 assert.match(providerSource, /import "server-only"/);
 assert.doesNotMatch(providerSource, /console\.|NEXT_PUBLIC|SUPABASE/);
-console.log(`AI provider validation passed: Ollama, OpenAI and OpenRouter selection; strict hosted schema; conservative fenced-JSON normalization; stage budgets; keep_alive; output caps; retry limits; offline/timeout/401/403/429/5xx; malformed/refused/truncated results; no secret leakage; real-engine validation gates; fresh read-only queries and grounded fallback. Planner prompt: ${GROUNDWATER_INTENT_PROMPT.length} characters. No live network or paid calls.`);
+console.log(`AI provider validation passed: Ollama, OpenAI and OpenRouter selection; strict hosted schema; conservative fenced-JSON normalization; one malformed OpenRouter intent retry; stage budgets; keep_alive; output caps; retry limits; offline/timeout/401/403/429/5xx; malformed/refused/truncated results; no secret leakage; real-engine validation gates; fresh read-only queries and grounded fallback. Planner prompt: ${GROUNDWATER_INTENT_PROMPT.length} characters. No live network or paid calls.`);

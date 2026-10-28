@@ -197,3 +197,66 @@
 @media (prefers-reduced-motion: reduce) {
   .public-site *, .auth-site * { scroll-behavior: auto; transition-duration: .01ms !important; }
 }
+
+.auth-form-top button.theme-toggle {
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  color: var(--accent-primary);
+}
+.auth-form-top button.theme-toggle:hover { border-color: var(--accent-primary); text-decoration: none; }
+
+:root[data-theme="dark"] .public-site,
+:root[data-theme="dark"] .auth-site {
+  --public-navy: #edf5f4;
+  --public-blue: #72bdf0;
+  --public-green: #6ac39b;
+  --public-cream: #081720;
+  --public-border: #29414d;
+  --public-muted: #a3b5be;
+}
+:root[data-theme="dark"] .public-header,
+:root[data-theme="dark"] .public-footer,
+:root[data-theme="dark"] .auth-form-side { background: #0c202b; }
+:root[data-theme="dark"] .public-brand-mark { color: #79c8f7; background: linear-gradient(145deg, #17394c, #183b31); box-shadow: inset 0 -3px #3da172; }
+:root[data-theme="dark"] .public-button { border-color: #3f9bd2; background: #287fb4; color: #f5fbfd; }
+:root[data-theme="dark"] .public-button:hover { border-color: #58addf; background: #3692c8; }
+:root[data-theme="dark"] .public-button-outline { border-color: #58717d; background: #102833dc; color: #edf5f4; }
+:root[data-theme="dark"] .public-button-outline:hover { border-color: #86c7ed; background: #183541; color: #fff; }
+:root[data-theme="dark"] .public-hero { background: #102832; }
+:root[data-theme="dark"] .public-hero-shade { background: linear-gradient(90deg, #081720 0%, #081720f4 22%, #081720c4 47%, #0817203d 76%), linear-gradient(0deg, #08172080, transparent 42%); }
+:root[data-theme="dark"] .public-hero-description,
+:root[data-theme="dark"] .public-data-layout > div > p:not(.public-eyebrow),
+:root[data-theme="dark"] .public-assistant-copy > p:not(.public-eyebrow) { color: #bfd0d5; }
+:root[data-theme="dark"] .public-coverage,
+:root[data-theme="dark"] .public-capability-card,
+:root[data-theme="dark"] .public-data-card,
+:root[data-theme="dark"] .public-prompt-card { background: #122a36; box-shadow: 0 10px 28px #0003; }
+:root[data-theme="dark"] .public-data-note { color: #f0cc79; }
+:root[data-theme="dark"] .public-card-icon { color: #78c7f7; background: #17394d; }
+:root[data-theme="dark"] .public-capability-card:nth-child(2) .public-card-icon,
+:root[data-theme="dark"] .public-data-card .public-card-icon { color: #70d0a1; background: #173b31; }
+:root[data-theme="dark"] .public-capability-card:nth-child(3) .public-card-icon { color: #f0c96e; background: #3a311c; }
+:root[data-theme="dark"] .public-data-section { background: #0d222b; }
+:root[data-theme="dark"] .public-data-card { border-color: #2c4b4a; }
+:root[data-theme="dark"] .public-audience-grid article { border-color: #35544f; }
+:root[data-theme="dark"] .public-assistant-section { border-color: #294b5d; background: #102832; }
+:root[data-theme="dark"] .public-prompt-card p { border-color: #31556a; background: #153547; }
+:root[data-theme="dark"] .public-text-action { color: #82caf5; }
+:root[data-theme="dark"] .public-final-section { background: #06131b; }
+:root[data-theme="dark"] .public-button-light { border-color: #dce9eb; background: #dce9eb; color: #0b2530; }
+:root[data-theme="dark"] .public-button-light:hover { border-color: #fff; background: #fff; color: #081720; }
+:root[data-theme="dark"] .auth-landscape { background: #102a35; }
+:root[data-theme="dark"] .auth-landscape-shade { background: linear-gradient(180deg, #081720e8, #08172066 38%, #06131be8 100%); }
+:root[data-theme="dark"] .auth-field input { border-color: var(--input-border); background: var(--input-background); color: var(--text-primary); }
+:root[data-theme="dark"] .auth-field input::placeholder { color: #8096a1; }
+:root[data-theme="dark"] .auth-message-error { border-color: #764c49; background: #321f20; color: #ffb8b2; }
+:root[data-theme="dark"] .auth-message-success { border-color: #3c6c50; background: #173126; color: #a5e2bc; }
+:root[data-theme="dark"] .auth-form-footer { color: #879da7; }
+
+@media (max-width: 768px) {
+  :root[data-theme="dark"] .auth-landscape-shade { background: linear-gradient(90deg, #081720eb, #08172052); }
+}
+@media (max-width: 520px) {
+  :root[data-theme="dark"] .public-hero-shade { background: linear-gradient(180deg, #081720 0%, #081720f5 40%, #081720a8 72%, #08172030 100%); }
+}

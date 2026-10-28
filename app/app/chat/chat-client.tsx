@@ -310,7 +310,7 @@ export default function ChatClient({ initialPrompt = "" }: { initialPrompt?: str
             <span aria-hidden="true" className="nd-chat-avatar flex h-10 w-10 items-center justify-center font-bold text-white">N</span>
             <div>
               <p className="font-semibold text-slate-900">NeerDrishti assistant</p>
-              <p className="text-xs text-slate-500">Local model · database tools · no chat history saved</p>
+              <p className="text-xs text-slate-500">Grounded AI · 2024 groundwater data · no chat history saved</p>
             </div>
           </div>
           <span className="nd-grounded inline-flex w-fit px-3 py-1.5 text-xs font-semibold">

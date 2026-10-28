@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import DashboardIcon from "@/app/app/dashboard-icons";
 import PublicBrand from "@/app/public-brand";
+import ThemeToggle from "@/app/theme-toggle";
 import { getDistricts, getOverallSummary } from "@/lib/groundwater-queries.server";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ const audiences = [
 function PublicHeader() {
   return <header className="public-header"><div className="public-container public-header-inner">
     <PublicBrand />
-    <nav className="public-header-actions" aria-label="Public navigation"><Link className="public-link" href="/auth">Sign in</Link><Link className="public-button public-button-small" href="/auth?mode=signup">Get started <DashboardIcon name="arrow" /></Link></nav>
+    <nav className="public-header-actions" aria-label="Public navigation"><ThemeToggle /><Link className="public-link" href="/auth">Sign in</Link><Link className="public-button public-button-small" href="/auth?mode=signup">Get started <DashboardIcon name="arrow" /></Link></nav>
   </div></header>;
 }
 

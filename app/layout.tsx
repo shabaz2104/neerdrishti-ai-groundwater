@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Serif_Display, Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import "./public-experience.css";
 
@@ -27,8 +28,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${display.variable} h-full antialiased`}>
-      <body className="min-h-full bg-slate-50 text-slate-900">{children}</body>
+    <html suppressHydrationWarning lang="en" className={`${geistSans.variable} ${geistMono.variable} ${display.variable} h-full antialiased`}>
+      <body className="min-h-full">{children}</body>
+      <Script id="neerdrishti-theme" strategy="beforeInteractive">
+        {`(()=>{const key="neerdrishti-theme";let theme;try{const saved=localStorage.getItem(key);theme=saved==="light"||saved==="dark"?saved:null}catch{}if(!theme)theme=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme})()`}
+      </Script>
     </html>
   );
 }

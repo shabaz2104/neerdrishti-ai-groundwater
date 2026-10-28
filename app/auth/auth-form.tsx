@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import PublicBrand from "@/app/public-brand";
+import ThemeToggle from "@/app/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
 
 type AuthMode = "signin" | "signup";
@@ -98,7 +99,7 @@ export default function AuthForm({ callbackError, initialMode }: AuthFormProps) 
       <div className="auth-landscape-content"><PublicBrand /><div><p className="public-eyebrow">Maharashtra Groundwater Insights</p><p className="auth-landscape-headline">Groundwater data for people, planning and a more water-secure future.</p><p>Explore Maharashtra’s 2024 groundwater assessments in one clear workspace.</p></div><span>NeerDrishti · 2024 assessment data</span></div>
     </section>
     <section className="auth-form-side" aria-labelledby="auth-title">
-      <div className="auth-form-top"><Link href="/" className="auth-back-link">← Back to home</Link><span>{isSignIn ? "New to NeerDrishti?" : "Already have an account?"} <button type="button" onClick={() => switchMode(isSignIn ? "signup" : "signin")}>{isSignIn ? "Create an account" : "Sign in"}</button></span></div>
+      <div className="auth-form-top"><Link href="/" className="auth-back-link">← Back to home</Link><ThemeToggle /><span>{isSignIn ? "New to NeerDrishti?" : "Already have an account?"} <button type="button" onClick={() => switchMode(isSignIn ? "signup" : "signin")}>{isSignIn ? "Create an account" : "Sign in"}</button></span></div>
       <div className="auth-form-wrap"><div className="auth-mobile-brand"><PublicBrand /></div><p className="public-eyebrow">Your groundwater workspace</p><h1 id="auth-title">{isSignIn ? "Welcome back" : "Create your account"}</h1><p className="auth-intro">{isSignIn ? "Sign in to continue exploring Maharashtra’s groundwater data." : "Create an account to explore the 2024 groundwater assessments."}</p>
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-field"><label htmlFor="email">Email</label><input autoComplete="email" id="email" maxLength={254} name="email" onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" required type="email" value={email} /></div>

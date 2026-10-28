@@ -245,7 +245,14 @@ export class OpenRouterProvider implements AiProvider {
     try { return { ok: true, content: normalizeOpenRouterIntent(content) }; }
     catch { return failure("AI_MALFORMED_RESPONSE"); }
   }
-  generateIntent(messages: AiMessage[]) { return this.generate("intent", messages); }
+  async generateIntent(messages: AiMessage[]) {
+    const first = await this.generate("intent", messages);
+    // The free router can select models with different formatting behavior.
+    // Retry one malformed planner response, but never relax JSON or intent validation.
+    return !first.ok && first.code === "AI_MALFORMED_RESPONSE"
+      ? this.generate("intent", messages)
+      : first;
+  }
   generateAnswer(messages: AiMessage[]) { return this.generate("answer", messages); }
 }
 
